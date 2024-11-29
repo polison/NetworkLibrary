@@ -71,6 +71,7 @@ namespace NetWorkLibrary.Network
         protected ByteBuffer ReadBuffer;
 
         protected readonly int MaxBuffSize = 0x4000;
+        protected readonly int MaxPacketBuffSize = 100 * 1024 * 1024;
 
         protected BaseSocket(Socket socket)
         {
@@ -227,7 +228,7 @@ namespace NetWorkLibrary.Network
                     uint cmd = packet.GetOpcode(ReadBuffer);
                     uint length = packet.GetLength(ReadBuffer);
 
-                    if (MaxBuffSize < length)
+                    if (MaxPacketBuffSize < length)
                     {
                         LogManager.Instance.Log(LogType.Warning, $"[{linkIP}] send to larger packet[{cmd}] with length[{length}], closed.");
                         Close();
