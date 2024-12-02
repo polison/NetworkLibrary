@@ -2,6 +2,7 @@
 using NetWorkLibrary.Utility;
 using System;
 using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NetWorkLibrary.Database
@@ -11,6 +12,7 @@ namespace NetWorkLibrary.Database
         bool isQuerying = false;
         MySqlConnection connection;
         MySqlConnection asyncConnection;
+        Timer timer;
         public void Init(string host, string user, string password, string database, int port)
         {
             string connStr = $"data source={host};database={database};user id={user};password={password};pooling=true;charset=utf8;SslMode=None;";
@@ -22,11 +24,18 @@ namespace NetWorkLibrary.Database
                 connection.Open();
                 asyncConnection.Open();
                 LogManager.Instance.Log(LogType.Message, "Mysql Successfully connected to {0}:{1}:{2}", host, port, database);
+                timer = new Timer(OnTimer, null, 0, 600 * 1000);
             }
             catch (MySqlException e)
             {
                 LogManager.Instance.Log(LogType.Error, "{0}", e.Message);
             }
+        }
+
+        private void OnTimer(object state)
+        {
+            connection.Ping();
+            asyncConnection.Ping();
         }
 
         public bool Execute(string sql, string[] paramNames, object[] paramValues)
@@ -264,6 +273,7 @@ namespace NetWorkLibrary.Database
         public void Dispose()
         {
             isQuerying = false;
+            timer.Dispose();
             connection.Dispose();
             asyncConnection.Dispose();
         }
