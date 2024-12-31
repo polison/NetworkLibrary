@@ -9,6 +9,8 @@ namespace NetWorkLibrary.Database
 {
     public sealed class MysqlManager : IDisposable
     {
+        private static readonly string[] emptyStrs = Array.Empty<string>();
+
         bool isQuerying = false;
         MySqlConnection connection;
         MySqlConnection asyncConnection;
@@ -38,18 +40,21 @@ namespace NetWorkLibrary.Database
             asyncConnection.Ping();
         }
 
-        public bool Execute(string sql, string[] paramNames, object[] paramValues)
+        public bool Execute(string sql, string[] paramNames = null, params object[] paramValues)
         {
-            if (paramNames.Length != paramValues.Length)
-            {
-                LogManager.Instance.Log(LogType.Warning, "Execute {0} Error: param is not equal.", sql);
-                return false;
-            }
-
             MySqlCommand cmd = new MySqlCommand(sql, connection);
-            for (int i = 0; i < paramNames.Length; i++)
+            if (paramNames != null)
             {
-                cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                if (paramNames.Length != paramValues.Length)
+                {
+                    LogManager.Instance.Log(LogType.Warning, "Execute {0} Error: param is not equal.", sql);
+                    return false;
+                }
+
+                for (int i = 0; i < paramNames.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                }
             }
 
             try
@@ -72,19 +77,23 @@ namespace NetWorkLibrary.Database
             return false;
         }
 
-        public MysqlResult Query(string sql, string[] paramNames, object[] paramValues)
+        public MysqlResult Query(string sql, string[] paramNames = null, params object[] paramValues)
         {
             MysqlResult result = new MysqlResult();
-            if (paramNames.Length != paramValues.Length)
-            {
-                LogManager.Instance.Log(LogType.Warning, "Query {0} Error: param is not equal.", sql);
-                return result;
-            }
-
             MySqlCommand cmd = new MySqlCommand(sql, connection);
-            for (int i = 0; i < paramNames.Length; i++)
+
+            if (paramNames != null)
             {
-                cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                if (paramNames.Length != paramValues.Length)
+                {
+                    LogManager.Instance.Log(LogType.Warning, "Query {0} Error: param is not equal.", sql);
+                    return result;
+                }
+
+                for (int i = 0; i < paramNames.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                }
             }
 
             try
@@ -110,12 +119,15 @@ namespace NetWorkLibrary.Database
             return result;
         }
 
-        public async void QueryAysnc(Action<MysqlResult> CallBack, string sql, string[] paramNames, object[] paramValues)
+        public async void QueryAysnc(Action<MysqlResult> CallBack, string sql, string[] paramNames = null, params object[] paramValues)
         {
-            if (paramNames.Length != paramValues.Length)
+            if (paramNames != null)
             {
-                LogManager.Instance.Log(LogType.Warning, "QueryAysnc {0} Error: param is not equal.", sql);
-                return;
+                if (paramNames.Length != paramValues.Length)
+                {
+                    LogManager.Instance.Log(LogType.Warning, "QueryAysnc {0} Error: param is not equal.", sql);
+                    return;
+                }
             }
 
             while (isQuerying)
@@ -126,9 +138,12 @@ namespace NetWorkLibrary.Database
 
             MysqlResult result = new MysqlResult();
             MySqlCommand cmd = new MySqlCommand(sql, connection);
-            for (int i = 0; i < paramNames.Length; i++)
+            if (paramNames != null)
             {
-                cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                for (int i = 0; i < paramNames.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                }
             }
 
             try
@@ -153,19 +168,22 @@ namespace NetWorkLibrary.Database
 
         #region 存储过程查询
 
-        public bool PExecute(string procedureName, string[] paramNames, object[] paramValues)
+        public bool PExecute(string procedureName, string[] paramNames = null, params object[] paramValues)
         {
-            if (paramNames.Length != paramValues.Length)
-            {
-                LogManager.Instance.Log(LogType.Warning, "PExecute {0} Error: param is not equal.", procedureName);
-                return false;
-            }
-
             MySqlCommand cmd = new MySqlCommand(procedureName, connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-            for (int i = 0; i < paramNames.Length; i++)
+            if (paramNames != null)
             {
-                cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                if (paramNames.Length != paramValues.Length)
+                {
+                    LogManager.Instance.Log(LogType.Warning, "PExecute {0} Error: param is not equal.", procedureName);
+                    return false;
+                }
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                for (int i = 0; i < paramNames.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                }
             }
 
             try
@@ -188,20 +206,23 @@ namespace NetWorkLibrary.Database
             return false;
         }
 
-        public MysqlResult PQuery(string procedureName, string[] paramNames, object[] paramValues)
+        public MysqlResult PQuery(string procedureName, string[] paramNames = null, params object[] paramValues)
         {
             MysqlResult result = new MysqlResult();
-            if (paramNames.Length != paramValues.Length)
-            {
-                LogManager.Instance.Log(LogType.Warning, "PQuery {0} Error: param is not equal.", procedureName);
-                return result;
-            }
-
             MySqlCommand cmd = new MySqlCommand(procedureName, connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-            for (int i = 0; i < paramNames.Length; i++)
+            if (paramNames != null)
             {
-                cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                if (paramNames.Length != paramValues.Length)
+                {
+                    LogManager.Instance.Log(LogType.Warning, "PQuery {0} Error: param is not equal.", procedureName);
+                    return result;
+                }
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                for (int i = 0; i < paramNames.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                }
             }
 
             try
@@ -227,12 +248,15 @@ namespace NetWorkLibrary.Database
             return result;
         }
 
-        public async void PQueryAysnc(Action<MysqlResult> CallBack, string procedureName, string[] paramNames, object[] paramValues)
+        public async void PQueryAysnc(Action<MysqlResult> CallBack, string procedureName, string[] paramNames = null, params object[] paramValues)
         {
-            if (paramNames.Length != paramValues.Length)
+            if (paramNames != null)
             {
-                LogManager.Instance.Log(LogType.Warning, "PQueryAysnc {0} Error: param is not equal.", procedureName);
-                return;
+                if (paramNames.Length != paramValues.Length)
+                {
+                    LogManager.Instance.Log(LogType.Warning, "PQueryAysnc {0} Error: param is not equal.", procedureName);
+                    return;
+                }
             }
 
             while (isQuerying)
@@ -243,11 +267,15 @@ namespace NetWorkLibrary.Database
 
             MysqlResult result = new MysqlResult();
             MySqlCommand cmd = new MySqlCommand(procedureName, connection);
-            cmd.CommandType = CommandType.StoredProcedure;
-            for (int i = 0; i < paramNames.Length; i++)
+            if (paramNames != null)
             {
-                cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                cmd.CommandType = CommandType.StoredProcedure;
+                for (int i = 0; i < paramNames.Length; i++)
+                {
+                    cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
+                }
             }
+            
 
             try
             {
