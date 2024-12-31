@@ -5,7 +5,7 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
         <Description>C#异步网络框架，加入了mysql数据库支持、MPPC压缩算法的加密解密，RC4对等加密。</Description>
-        <Version>1.0.7</Version>
+        <Version>1.0.4</Version>
     </PropertyGroup>
 
     <ItemGroup>
