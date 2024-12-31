@@ -171,6 +171,8 @@ namespace NetWorkLibrary.Database
         public bool PExecute(string procedureName, string[] paramNames = null, params object[] paramValues)
         {
             MySqlCommand cmd = new MySqlCommand(procedureName, connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
             if (paramNames != null)
             {
                 if (paramNames.Length != paramValues.Length)
@@ -179,7 +181,6 @@ namespace NetWorkLibrary.Database
                     return false;
                 }
 
-                cmd.CommandType = CommandType.StoredProcedure;
                 for (int i = 0; i < paramNames.Length; i++)
                 {
                     cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
@@ -210,6 +211,8 @@ namespace NetWorkLibrary.Database
         {
             MysqlResult result = new MysqlResult();
             MySqlCommand cmd = new MySqlCommand(procedureName, connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
             if (paramNames != null)
             {
                 if (paramNames.Length != paramValues.Length)
@@ -218,7 +221,6 @@ namespace NetWorkLibrary.Database
                     return result;
                 }
 
-                cmd.CommandType = CommandType.StoredProcedure;
                 for (int i = 0; i < paramNames.Length; i++)
                 {
                     cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
@@ -267,9 +269,10 @@ namespace NetWorkLibrary.Database
 
             MysqlResult result = new MysqlResult();
             MySqlCommand cmd = new MySqlCommand(procedureName, connection);
+            cmd.CommandType = CommandType.StoredProcedure;
+
             if (paramNames != null)
             {
-                cmd.CommandType = CommandType.StoredProcedure;
                 for (int i = 0; i < paramNames.Length; i++)
                 {
                     cmd.Parameters.AddWithValue(paramNames[i], paramValues[i]);
