@@ -1,6 +1,7 @@
 ﻿using NetWorkLibrary.Algorithm;
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
 
@@ -144,14 +145,30 @@ namespace NetWorkLibrary.Utility
 
         public void WriteString(string value)
         {
-            var data = Encoding.UTF8.GetBytes(value);
+            byte[] data;
+            if(string.IsNullOrEmpty(value))
+            {
+                data = Array.Empty<byte>();
+            }
+            else
+            {
+                data = Encoding.UTF8.GetBytes(value);
+            }
             WriteInt32(data.Length);
             Write(data);
         }
 
         public void WriteEncodeString(string value, Encoding encoding)
         {
-            var data = encoding.GetBytes(value);
+            byte[] data;
+            if (string.IsNullOrEmpty(value))
+            {
+                data = Array.Empty<byte>();
+            }
+            else
+            {
+                data = encoding.GetBytes(value);
+            }
             WriteInt32(data.Length);
             Write(data);
         }
