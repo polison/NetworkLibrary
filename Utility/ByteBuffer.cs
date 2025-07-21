@@ -239,7 +239,7 @@ namespace NetWorkLibrary.Utility
 
         public float ReadSingle()
         {
-            var data = ReadBytes(4);
+            var data = ReadNumber(4);
             return BitConverter.ToSingle(data, 0);
         }
 
